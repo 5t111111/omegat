@@ -91,7 +91,7 @@ public class GITRemoteRepository implements IRemoteRepository {
     private MyCredentialsProvider myCredentialsProvider;
 
     public static boolean isGITDirectory(File localDirectory) {
-        return getLocalRepositoryRoot(localDirectory) != null;
+        return false;
     }
 
     public boolean isFilesLockingAllowed() {
@@ -566,32 +566,7 @@ public class GITRemoteRepository implements IRemoteRepository {
      */
     public static boolean isGitRepository(String url, Credentials credentials)
             throws AuthenticationException {
-        // Heuristics to save some waiting time
-        if (url.startsWith("svn://") || url.startsWith("svn+")) {
-            return false;
-        }
-        try {
-            if (credentials != null) {
-                MyCredentialsProvider provider = new MyCredentialsProvider(null);
-                provider.setCredentials(credentials);
-                CredentialsProvider.setDefault(provider);
-            }
-            Collection<Ref> result = new LsRemoteCommand(null).setRemote(url).call();
-            return !result.isEmpty();
-        } catch (TransportException ex) {
-            String message = ex.getMessage();
-            if (message.endsWith("not authorized") || message.endsWith("Auth fail")
-            		|| message.contains("Too many authentication failures")
-            		|| message.contains("Authentication is required")) {
-                throw new AuthenticationException(ex);
-            }
-            return false;
-        } catch (GitAPIException ex) {
-            throw new AuthenticationException(ex);
-        } catch (JGitInternalException ex) {
-            // Happens if the URL is a Subversion URL like svn://...
-            return false;
-        }
+        return false;
     }
 
     public static String guessRepoName(String url) {
